@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "flash.h": "c",
+        "ws2812.h": "c"
+    }
+}
