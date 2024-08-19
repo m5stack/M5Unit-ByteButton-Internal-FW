@@ -1,1 +1,1 @@
-# M5Unit ByteSwitch Internal Firmware
+# M5Unit ByteButton Internal Firmware
