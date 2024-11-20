@@ -17,8 +17,8 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
-#ifndef __FLASH_H
-#define __FLASH_H
+#ifndef __FLASH_H__
+#define __FLASH_H__
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32g0xx.h"
@@ -52,7 +52,6 @@
 #define MIN(A,B) (A<B?A:B)
 
 
-// void flashReadWriteTest( void ) ;
 bool writeMessageToFlash( uint8_t *buff , uint16_t length);
 uint16_t readPackedMessageFromFlash( uint8_t *buff , uint16_t length);
 

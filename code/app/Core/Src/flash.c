@@ -96,21 +96,6 @@ uint16_t readPackedMessageFromFlash( uint8_t *buff , uint16_t length)
     return MIN(getLength,length);
 }
 /*******************************************************************************
-* Function Name  : isItOddNumber
-* Description    : is input data an odd number?
-* Input          : number:input data
-* Output         : 
-* Return         : true/false
-*******************************************************************************/
-bool isItOddNumber(uint16_t number)
-{
-    if(0 != number%8)
-    {
-        return true;
-    }
-    return false;
-}
-/*******************************************************************************
 * Function Name  : Flash_eeprom_WriteWithPacked
 * Description    : Write a group of datas to flash.
 * Input          : buff:pointer of first data, length: write length
@@ -137,17 +122,15 @@ bool writeMessageToFlash( uint8_t *buff , uint16_t length)
     
     uint32_t PageError = 0;                    
     if (HAL_FLASHEx_Erase(&My_Flash, &PageError) != HAL_OK) {
+        HAL_FLASH_Lock();
         return false;
     }  
 
     
     temp = EEPPROM_PACKAGEHEAD |  (uint64_t)length << 16;    
     
-    /*Write head*/
+    /*Write head and length*/
     HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, STM32G0xx_FLASH_PAGE31_STARTADDR, temp);
-    /*Write length*/
-    // HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, STM32G0xx_FLASH_PAGE31_STARTADDR+8, length);
-    
     
     /*Write datas*/
     for(i=0 ;i<length/8 ;i++)
@@ -156,12 +139,6 @@ bool writeMessageToFlash( uint8_t *buff , uint16_t length)
         | (uint64_t)buff[8*i+4]<<32 | (uint64_t)buff[8*i+5]<<40 | (uint64_t)buff[8*i+6]<<48 | (uint64_t)buff[8*i+7]<<56;
         HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, STM32G0xx_FLASH_PAGE31_STARTADDR+8+8*i, temp);
     }  
-    // if( isItOddNumber(length) )//Write one more if length is odd number.
-    // {        
-    //     temp = buff[0] | (uint64_t)buff[1]<<8 | (uint64_t)buff[2]<<16 | (uint64_t)buff[3]<<24\
-    //     | (uint64_t)buff[4]<<32 | (uint64_t)buff[5]<<40 | (uint64_t)buff[6]<<48 | (uint64_t)buff[7]<<56;
-    //     HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, STM32G0xx_FLASH_PAGE31_STARTADDR+8, temp);
-    // }
 
     
     /*Read out and check*/
@@ -177,35 +154,3 @@ bool writeMessageToFlash( uint8_t *buff , uint16_t length)
     HAL_FLASH_Lock();
     return true;    
 }
-
-
-/*******************************************************************************
-* Function Name  : flashReadWriteTest
-* Description    : Flash read write test.
-* Input          : None
-* Output         : None
-* Return         : None
-*******************************************************************************/
-//void flashReadWriteTest( void )
-//{
-//    #define testReadWriteNumber  200
-//    uint8_t buff_write[testReadWriteNumber]={0};
-//    uint8_t buff_read[testReadWriteNumber]={0};
-//    uint16_t length;
-//    int i;
-//
-//    for( i=0;i<testReadWriteNumber;i++)
-//    {
-//        buff_write[i]=i;
-//    }
-//
-//    writeMessageToFlash( buff_write , testReadWriteNumber);
-//    length = readPackedMessageFromFlash( buff_read , testReadWriteNumber);
-//    printf("length=%d\r\n",length);
-//    for(i=0;i<length;i++)
-//    {
-//        printf("read[%d]=%d\r\n",i,buff_read[i]);
-//    }
-//
-//    while(1);
-//}

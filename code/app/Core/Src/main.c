@@ -51,25 +51,35 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+// i2c address
 uint8_t i2c_address[1] = {0};
-uint8_t flash_data[FLASH_DATA_SIZE] = {0};
-volatile uint8_t flag_jump_bootloader = 0;
-volatile uint32_t jump_bootloader_timeout = 0;
-volatile uint8_t fm_version = FIRMWARE_VERSION;
+// flash data
+static uint8_t flash_data[FLASH_DATA_SIZE] = {0};
 
-volatile uint32_t i2c_stop_timeout_delay = 0;
+// jump bootloader
+volatile static uint8_t flag_jump_bootloader = 0;
+volatile static uint32_t jump_bootloader_timeout = 0;
 
+// firmware version
+volatile static uint8_t fm_version = FIRMWARE_VERSION;
+
+// i2c timeout handle
+volatile static uint32_t i2c_stop_timeout_delay = 0;
+
+// switch status
 volatile uint8_t switch_status = 0;
-uint8_t switch_status_set[8] = {0};
+static uint8_t switch_status_set[8] = {0};
+
+// irq handle
 volatile uint8_t is_irq_enable = 0;
-uint8_t test_rgb_233;
-uint32_t test_rgb_888;
 
-uint8_t rgb_show_mode = 0;
-uint32_t sys_rgb_color_switch_0[8] = {0};
-uint32_t sys_rgb_color_switch_1[8] = {0};
+// rgb show mode
+static uint8_t rgb_show_mode = 0;
+static uint32_t sys_rgb_color_switch_0[8] = {0};
+static uint32_t sys_rgb_color_switch_1[8] = {0};
 
-uint8_t is_flash_write_back = 0;
+// flash write back flag
+static uint8_t is_flash_write_back = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -405,6 +415,7 @@ int main(void)
   }
   sk6812_init(PIXEL_MAX);
   init_swtich_status();
+  fm_version = FIRMWARE_VERSION;
 
   user_i2c_init(); 
   i2c2_it_enable(); 
@@ -447,7 +458,7 @@ int main(void)
               neopixel_set_color(i, sys_rgb_color_switch_0[i]);
             }
           }
-          neopixel_set_color(8, 0);
+          neopixel_set_color(8, lastest_rgb_color[8]);
           rgb_show_lock = 1;
           ws2812_show();        
       }
@@ -542,6 +553,7 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+    NVIC_SystemReset();
   }
   /* USER CODE END Error_Handler_Debug */
 }

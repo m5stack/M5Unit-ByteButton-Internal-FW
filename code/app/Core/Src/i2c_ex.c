@@ -27,13 +27,14 @@
 
 #define	I2C_RECEIVE_BUFFER_LEN	600
 
-__IO uint8_t aReceiveBuffer[I2C_RECEIVE_BUFFER_LEN];
-__IO uint8_t tx_buffer[I2C_RECEIVE_BUFFER_LEN];
-__IO uint16_t ubReceiveIndex = 0;
-uint8_t* pSlaveTransmitBuffer = 0;
-volatile uint8_t i2c_addr = 0;
-volatile uint16_t tx_buffer_index = 0;
-volatile uint16_t tx_len = 0;
+__IO static uint8_t aReceiveBuffer[I2C_RECEIVE_BUFFER_LEN];
+__IO static uint8_t tx_buffer[I2C_RECEIVE_BUFFER_LEN];
+__IO static uint16_t ubReceiveIndex = 0;
+volatile static uint8_t i2c_addr = 0;
+volatile static uint16_t tx_buffer_index = 0;
+volatile static uint16_t tx_len = 0;
+
+// i2c timeout handle
 volatile uint32_t i2c_timeout_counter = 0;
 volatile uint32_t i2c_stop_timeout_flag = 0;
 volatile uint32_t i2c_stop_timeout_counter = 0;
@@ -90,7 +91,11 @@ void Slave_Reception_Callback(void)
 {
   /* Read character in Receive Data register.
   RXNE flag is cleared by reading data in RXDR register */
-  aReceiveBuffer[ubReceiveIndex++] = LL_I2C_ReceiveData8(I2C2);
+  aReceiveBuffer[ubReceiveIndex] = LL_I2C_ReceiveData8(I2C2);
+  ubReceiveIndex++;
+  if (ubReceiveIndex >= I2C_RECEIVE_BUFFER_LEN) {
+    ubReceiveIndex = 0;
+  }
 }
 
 void Slave_Ready_To_Transmit_Callback(void)
@@ -101,13 +106,16 @@ void Slave_Ready_To_Transmit_Callback(void)
   if (tx_buffer_index >= tx_len) {
     tx_buffer_index = 0;
   }
+  if (tx_buffer_index >= I2C_RECEIVE_BUFFER_LEN) {
+    tx_buffer_index = 0;
+  }
 }
 
 void I2C2_IRQHandler(void)
 {
   /* USER CODE BEGIN I2C2_IRQn 0 */
   i2c_timeout_counter++;
-  if (i2c_timeout_counter > 1000) {
+  if (i2c_timeout_counter > 12000) {
     LL_I2C_DeInit(I2C2);
     LL_I2C_DisableAutoEndMode(I2C2);
     LL_I2C_Disable(I2C2);

@@ -66,8 +66,8 @@ all: main-build
 main-build: STM32G031_Bootloader.elf secondary-outputs
 
 # Tool invocations
-STM32G031_Bootloader.elf STM32G031_Bootloader.map: $(OBJS) $(USER_OBJS) D:\Documents\Nextcloud\Projects_works\Byte_Switch\bootloader\STM32G031G8UX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "STM32G031_Bootloader.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"D:\Documents\Nextcloud\Projects_works\Byte_Switch\bootloader\STM32G031G8UX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STM32G031_Bootloader.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+STM32G031_Bootloader.elf STM32G031_Bootloader.map: $(OBJS) $(USER_OBJS) D:\Documents\Nextcloud\Projects_works\Byte_Button\src\bootloader\STM32G031G8UX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "STM32G031_Bootloader.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"D:\Documents\Nextcloud\Projects_works\Byte_Button\src\bootloader\STM32G031G8UX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STM32G031_Bootloader.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
