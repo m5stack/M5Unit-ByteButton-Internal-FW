@@ -419,10 +419,6 @@ int main(void)
 
   user_i2c_init(); 
   i2c2_it_enable(); 
-  for (int i = 0; i < PIXEL_MAX; i++) {
-    neopixel_set_color(i, 0);
-  }
-  ws2812_show();
   /* USER CODE END 2 */
 
   /* Infinite loop */
